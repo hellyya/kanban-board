@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- App JS -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function TaskCard({ task, boardId, index, dragData, setDragData, moveTask }) {
+      return (
+        <div
+          className="task-card"
+          draggable
+          onDragStart={() => setDragData({ taskId: task.id, fromBoard: boardId, fromIndex: index })}
+          onDragOver={e => e.preventDefault()}
+          onDrop={() => {
+            if (!dragData) return;
+            moveTask(dragData.taskId, dragData.fromBoard, boardId, dragData.fromIndex, index);
+          }}
+        >
+          <strong>{task.title}</strong>
+          <p>{task.desc}</p>
+          <small>{task.date}</small>
+        </div>
+      );
+    }
+
+    function Board({ board, activeBoard, setActiveBoard, newTask, setNewTask, handleChange, addTask, dragData, setDragData, moveTask, renameBoard, deleteBoard }) {
+      const handleDropEmpty = () => {
+        if (!dragData) return;
+        moveTask(dragData.taskId, dragData.fromBoard, board.id, dragData.fromIndex, board.tasks.length);
+      };
+
+      return (
+        <div className="board" onDragOver={e => e.preventDefault()} onDrop={handleDropEmpty}>
+          <h3>{board.title}</h3>
+          <div className="board-controls">
+            <button onClick={() => { const newTitle = prompt("Rename board", board.title); if(newTitle) renameBoard(board.id, newTitle); }}>Rename</button>
+            <button onClick={() => deleteBoard(board.id)}>Delete</button>
+          </div>
+
+          {board.tasks.map((task, index) => (
+            <TaskCard key={task.id} task={task} boardId={board.id} index={index} dragData={dragData} setDragData={setDragData} moveTask={moveTask} />
+          ))}
+
+          {activeBoard === board.id ? (
+            <div className="add-task">
+              <input name="title" placeholder="Task title" value={newTask.title} onChange={handleChange} />
+              <input name="desc" placeholder="Description" value={newTask.desc} onChange={handleChange} />
+              <button onClick={addTask}>Add</button>
+              <button onClick={() => setActiveBoard(null)}>Cancel</button>
+            </div>
+          ) : (
+            <button className="add-task-btn" onClick={() => setActiveBoard(board.id)}>+ Add Task</button>
+          )}
+        </div>
+      );
+    }
+
+    function AddBoard({ addBoard }) {
+      const [name, setName] = useState("");
+      return (
+        <div className="add-board">
+          <input placeholder="New board name" value={name} onChange={e => setName(e.target.value)} />
+          <button onClick={() => { if(!name.trim()) return alert("Board name required"); addBoard(name); setName(""); }}>+ Add Board</button>
+        </div>
+      );
+    }
+
+    function App() {
+      const storedBoards = localStorage.getItem("boards");
+      const [boards, setBoards] = useState(storedBoards ? JSON.parse(storedBoards) : [
+        { id: 1, title: "To Do", tasks: [] },
+        { id: 2, title: "In Progress", tasks: [] },
+        { id: 3, title: "Done", tasks: [] }
+      ]);
+      const [activeBoard, setActiveBoard] = useState(null);
+      const [newTask, setNewTask] = useState({ title: "", desc: "" });
+      const [dragData, setDragData] = useState(null);
+
+      useEffect(() => { localStorage.setItem("boards", JSON.stringify(boards)); }, [boards]);
+
+      const handleChange = e => setNewTask({ ...newTask, [e.target.name]: e.target.value });
+      const addTask = () => {
+        if(!newTask.title.trim()) return alert("Title required");
+        const task = { id: Date.now(), title: newTask.title, desc: newTask.desc, date: new Date().toLocaleDateString() };
+        setBoards(prev => prev.map(b => b.id === activeBoard ? { ...b, tasks: [...b.tasks, task] } : b));
+        setNewTask({ title: "", desc: "" });
+        setActiveBoard(null);
+      };
+      const addBoard = title => setBoards(prev => [...prev, { id: Date.now(), title, tasks: [] }]);
+      const renameBoard = (id, title) => setBoards(prev => prev.map(b => b.id === id ? { ...b, title } : b));
+      const deleteBoard = id => setBoards(prev => prev.filter(b => b.id !== id));
+
+      const moveTask = (taskId, fromBoardId, toBoardId, fromIndex, toIndex) => {
+        setBoards(prevBoards => {
+          let movedTask;
+          return prevBoards.map(board => {
+            let tasks = [...board.tasks];
+            if(board.id === fromBoardId) {
+              [movedTask] = tasks.splice(fromIndex, 1);
+            }
+            if(board.id === toBoardId && movedTask !== undefined) {
+              tasks.splice(toIndex, 0, movedTask);
+            }
+            return { ...board, tasks };
+          });
+        });
+        setDragData(null);
+      };
+
+      return (
+        <div>
+          <AddBoard addBoard={addBoard} />
+          <div className="boards-container">
+            {boards.map(board => (
+              <Board
+                key={board.id}
+                board={board}
+                activeBoard={activeBoard} setActiveBoard={setActiveBoard}
+                newTask={newTask} setNewTask={setNewTask} handleChange={handleChange} addTask={addTask}
+                dragData={dragData} setDragData={setDragData} moveTask={moveTask}
+                renameBoard={renameBoard} deleteBoard={deleteBoard}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+/* Reset and body styling */
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Container for all boards */
+.boards-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: flex-start; /* align columns from the left */
+  flex-wrap: nowrap; /* keep columns in a single row, horizontal scroll if needed */
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+/* Individual board */
+.board {
+  min-width: 260px;
+  background: #e3e3e3;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  flex-shrink: 0; /* prevent shrinking */
+}
+
+/* Board title */
+.board h3 {
+  text-align: center;
+  margin: 0 0 10px;
+  font-size: 1.2em;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+}
+
+/* Board controls (rename/delete) */
+.board-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+/* General button styles */
+button {
+  cursor: pointer;
+  border-radius: 4px;
+  border: none;
+  padding: 5px 8px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* Add task button */
+.add-task-btn {
+  margin-top: 10px;
+  background: #4CAF50;
+  color: #fff;
+}
+
+/* Add task form inputs */
+.add-task-form input {
+  width: 100%;
+  padding: 5px;
+  margin: 4px 0;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+}
+
+/* Add task form buttons */
+.add-task-form button:first-of-type {
+  background: #4CAF50;
+  color: #fff;
+  margin-right: 4px;
+}
+
+.add-task-form button:last-of-type {
+  background: #f44336;
+  color: #fff;
+}
+
+/* Individual task card */
+.task-card {
+  background: #fff;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+/* Hover effect for task cards */
+.task-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+
+/* Task content */
+.task-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.task-card p {
+  margin: 2px 0 4px;
+  font-size: 0.95em;
+  color: #333;
+}
+
+.task-card small {
+  font-size: 0.8em;
+  color: #666;
+}
+
+/* Task card buttons */
+.task-card div button:first-of-type {
+  background: #2196F3;
+  color: #fff;
+  margin-right: 4px;
+}
+
+.task-card div button:last-of-type {
+  background: #f44336;
+  color: #fff;
+}
+
+/* Drag-over effects */
+.board.drag-over {
+  border: 2px dashed #4CAF50;
+  background: #d9ffd9;
+}
+
+.task-card.drag-over {
+  border: 2px dashed #2196F3;
+}
