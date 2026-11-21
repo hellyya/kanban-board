@@ -2,6 +2,8 @@
 
 A lightweight Kanban board built with React that runs entirely in the browser. There is no build step and no backend.
 
+**▶ Live demo: https://hellyya.github.io/kanban-board/**
+
 ## Features
 
 - Three starter columns (**To Do**, **In Progress**, **Done**), plus your own custom boards
@@ -16,7 +18,7 @@ React 18 (loaded from a CDN), JavaScript, HTML, CSS. JSX is compiled in the brow
 
 ## Running it
 
-Open `index.html` in a browser. That's it.
+Try the [live demo](https://hellyya.github.io/kanban-board/), or open `index.html` in a browser.
 
 ## How it works
 
